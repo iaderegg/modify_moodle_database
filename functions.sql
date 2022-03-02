@@ -16,10 +16,11 @@ BEGIN
 		WHERE username NOT IN (
 			SELECT username
 			FROM mdl_user
-			WHERE username = ANY(SELECT DISTINCT id_usuario
-									FROM mdl_talentospilos_user_rol
-									WHERE id_usuario <> 2
-											OR id_usuario <> 128)
+			WHERE username = ANY(SELECT DISTINCT u.username
+									FROM mdl_talentospilos_user_rol tpur
+                                        INNER JOIN  mdl_user u ON u.id = tpur.id_usuario
+									WHERE u.id <> 2
+											OR u.id <> 128)
 		)
 		ORDER BY id ASC
 		--LIMIT 10
