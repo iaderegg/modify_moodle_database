@@ -16,7 +16,7 @@ BEGIN
 		WHERE username NOT IN (
 			SELECT username
 			FROM mdl_user
-			WHERE username = ANY(SELECT DISTINCT id_usuario
+			WHERE username ANY(SELECT DISTINCT id_usuario
 									FROM mdl_talentospilos_user_rol
 									WHERE id_usuario <> 2
 											OR id_usuario <> 128)
