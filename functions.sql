@@ -1,7 +1,7 @@
 -----------------------------------------------
 ----------    DECLARE FUNCTIONS   -------------
 -----------------------------------------------
---Update users table
+-- Update users table
 CREATE OR REPLACE FUNCTION updateUsers()
 RETURNS void AS $BODY$
 DECLARE
@@ -21,8 +21,7 @@ BEGIN
                                     FROM mdl_talentospilos_user_rol tpur
                                         INNER JOIN  mdl_user u ON u.id = tpur.id_usuario
                                     WHERE u.id <> 2
-                                        OR u.id <> 128
-                                        )
+                                        OR u.id <> 128)
             UNION
 
             SELECT *
@@ -105,7 +104,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---delete chat messages table
+-- Delete chat messages table
 CREATE OR REPLACE FUNCTION deleteChatMessages()
 RETURNS void AS $BODY$
 DECLARE
@@ -117,7 +116,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update assigns table
+-- Update assigns table.
 CREATE OR REPLACE FUNCTION updateAssigns()
 RETURNS void AS $BODY$
 DECLARE
@@ -288,7 +287,8 @@ $BODY$
 LANGUAGE plpgsql;
 
 
---update quices_attempts table
+-- Update quices_attempts table.
+-- **** Revisar ****
 CREATE OR REPLACE FUNCTION updateQuicesAttempts()
 RETURNS void AS $BODY$
 DECLARE
@@ -304,10 +304,10 @@ BEGIN
     LOOP
         SELECT round(SUM(qas.fraction), 2) INTO fractions_sum
         FROM mdl_quiz_attempts quiza
-        JOIN mdl_question_usages qu ON qu.id = quiza.uniqueid
-        JOIN mdl_question_attempts qa ON qa.questionusageid = qu.id
-        JOIN mdl_question_attempt_steps qas ON qas.questionattemptid = qa.id
-        LEFT JOIN mdl_question_attempt_step_data qasd ON qasd.attemptstepid = qas.id
+            JOIN mdl_question_usages qu ON qu.id = quiza.uniqueid
+            JOIN mdl_question_attempts qa ON qa.questionusageid = qu.id
+            JOIN mdl_question_attempt_steps qas ON qas.questionattemptid = qa.id
+            LEFT JOIN mdl_question_attempt_step_data qasd ON qasd.attemptstepid = qas.id
         WHERE quiza.id = attempt.id AND qasd.name = '-finish' AND quiza.state = 'finished';
         --RAISE NOTICE 'Grade = %', fractions_sum;
 
@@ -352,7 +352,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update questions categories table
+-- Update questions categories table
 CREATE OR REPLACE FUNCTION updateQuestionsCategories()
 RETURNS void AS $BODY$
 DECLARE
@@ -375,7 +375,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update questions of questionnaire table
+-- Update questions of questionnaire table
 CREATE OR REPLACE FUNCTION updateQuestionsQuestionnaires()
 RETURNS void AS $BODY$
 DECLARE
@@ -471,7 +471,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update questions table
+-- Update questions table.
 CREATE OR REPLACE FUNCTION updateQuestions()
 RETURNS void AS $BODY$
 DECLARE
@@ -494,7 +494,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update answers table
+-- Update answers table.
 CREATE OR REPLACE FUNCTION updateAnswers()
 RETURNS void AS $BODY$
 DECLARE
@@ -516,7 +516,6 @@ BEGIN
 END;
 $BODY$
 LANGUAGE plpgsql;
-
 
 --update questions Ddimageortext1 table
 CREATE OR REPLACE FUNCTION updateQuestionsDdimageortext1()
@@ -587,7 +586,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update questions Kprime table
+-- Update questions Kprime table
 CREATE OR REPLACE FUNCTION updateQuestionsKprime()
 RETURNS void AS $BODY$
 DECLARE
@@ -610,7 +609,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update questions Match table
+-- Update questions Match table
 CREATE OR REPLACE FUNCTION updateQuestionsMatch()
 RETURNS void AS $BODY$
 DECLARE
@@ -633,71 +632,71 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update answres pilos table
-CREATE OR REPLACE FUNCTION updatePilosAnswers()
-RETURNS void AS $BODY$
-DECLARE
-    answer mdl_talentospilos_df_respuestas%rowtype;
-    counter integer;
-BEGIN
-    counter := 0;
-    FOR answer IN
-        SELECT id
-        FROM mdl_talentospilos_df_respuestas
-        WHERE id_pregunta IN (5,6,7,8,16,17,20,26,28,29,30,31,32,33,34,37,48,49,50,51,57)
-        ORDER BY id ASC
-    LOOP
-        UPDATE mdl_talentospilos_df_respuestas
-        SET respuesta = 'Información sensible '||counter
-        WHERE id = answer.id;
-        counter := counter + 1;
-    END LOOP;
-    RETURN;
-END;
-$BODY$
-LANGUAGE plpgsql;
+-- update answers pilos table
+-- CREATE OR REPLACE FUNCTION updatePilosAnswers()
+-- RETURNS void AS $BODY$
+-- DECLARE
+--     answer mdl_talentospilos_df_respuestas%rowtype;
+--     counter integer;
+-- BEGIN
+--     counter := 0;
+--     FOR answer IN
+--         SELECT id
+--         FROM mdl_talentospilos_df_respuestas
+--         WHERE id_pregunta IN (5,6,7,8,16,17,20,26,28,29,30,31,32,33,34,37,48,49,50,51,57)
+--         ORDER BY id ASC
+--     LOOP
+--         UPDATE mdl_talentospilos_df_respuestas
+--         SET respuesta = 'Información sensible '||counter
+--         WHERE id = answer.id;
+--         counter := counter + 1;
+--     END LOOP;
+--     RETURN;
+-- END;
+-- $BODY$
+-- LANGUAGE plpgsql;
 
---update users pilos table
-CREATE OR REPLACE FUNCTION updatePilosUsers()
-RETURNS void AS $BODY$
-DECLARE
-    usuario mdl_talentospilos_usuario%rowtype;
-    counter integer;
-BEGIN
-    counter := 0;
-    FOR usuario IN
-        SELECT *
-        FROM mdl_talentospilos_usuario
-        ORDER BY id ASC
-        --LIMIT 10
-    LOOP
-        UPDATE mdl_talentospilos_usuario
-        SET
-            num_doc = 'Document '||counter,
-            num_doc_ini = 'Document '||counter,
-            dir_ini='999',
-            barrio_ini = 'Meléndez',
-            tel_ini='888',
-            direccion_res= '777',
-            barrio_res='Meléndez',
-            tel_res='666',
-            celular='555',
-            emailpilos ='pruebaPilos@correo.com',
-            tel_acudiente='444',
-            acudiente = 'Miss Rose',
-            colegio = 'Liceo Mixto '||counter,
-            puntaje_icfes = floor(random() * ( 450 - 1 + 1) + 1),
-            estrato = floor(random() * ( 5 - 1 + 1) + 1),
-            vive_con = 'Familia'
-        WHERE id = usuario.id;
-        counter := counter + 1;
-    END LOOP;
-    RETURN;
-END;
-$BODY$
-LANGUAGE plpgsql;
+-- Update users pilos table
+-- CREATE OR REPLACE FUNCTION updatePilosUsers()
+-- RETURNS void AS $BODY$
+-- DECLARE
+--     usuario mdl_talentospilos_usuario%rowtype;
+--     counter integer;
+-- BEGIN
+--     counter := 0;
+--     FOR usuario IN
+--         SELECT *
+--         FROM mdl_talentospilos_usuario
+--         ORDER BY id ASC
+--         --LIMIT 10
+--     LOOP
+--         UPDATE mdl_talentospilos_usuario
+--         SET
+--             num_doc = 'Document '||counter,
+--             num_doc_ini = 'Document '||counter,
+--             dir_ini='999',
+--             barrio_ini = 'Meléndez',
+--             tel_ini='888',
+--             direccion_res= '777',
+--             barrio_res='Meléndez',
+--             tel_res='666',
+--             celular='555',
+--             emailpilos ='pruebaPilos@correo.com',
+--             tel_acudiente='444',
+--             acudiente = 'Miss Rose',
+--             colegio = 'Liceo Mixto '||counter,
+--             puntaje_icfes = floor(random() * ( 450 - 1 + 1) + 1),
+--             estrato = floor(random() * ( 5 - 1 + 1) + 1),
+--             vive_con = 'Familia'
+--         WHERE id = usuario.id;
+--         counter := counter + 1;
+--     END LOOP;
+--     RETURN;
+-- END;
+-- $BODY$
+-- LANGUAGE plpgsql;
 
---update mdl_assignfeedback_comments
+-- UUpdate mdl_assignfeedback_comments
 CREATE OR REPLACE FUNCTION updateAssignFeedBackComments()
 RETURNS void AS $BODY$
 DECLARE
@@ -718,7 +717,7 @@ $BODY$
 LANGUAGE plpgsql;
 
 
---update mdl_assignfeedback_editpdf_cmnt
+-- Update mdl_assignfeedback_editpdf_cmnt.
 CREATE OR REPLACE FUNCTION updateAssignFeedBackPdfs()
 RETURNS void AS $BODY$
 DECLARE
@@ -738,7 +737,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_assignfeedback_editpdf_quick
+-- Update mdl_assignfeedback_editpdf_quick.
 CREATE OR REPLACE FUNCTION updateAssignFeedBackPdfQuick()
 RETURNS void AS $BODY$
 DECLARE
@@ -758,7 +757,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_assignsubmission_onlinetext
+-- Update mdl_assignsubmission_onlinetext.
 CREATE OR REPLACE FUNCTION updateAssignSubmission()
 RETURNS void AS $BODY$
 DECLARE
@@ -778,7 +777,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_attendance_sessions
+-- Update mdl_attendance_sessions.
 CREATE OR REPLACE FUNCTION updateAttendanceSessions()
 RETURNS void AS $BODY$
 DECLARE
@@ -798,7 +797,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_attendance_statuses
+-- Update mdl_attendance_statuses.
 CREATE OR REPLACE FUNCTION updateAttendanceStatuses()
 RETURNS void AS $BODY$
 DECLARE
@@ -818,7 +817,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_attendance_tempusers
+-- Update mdl_attendance_tempusers.
 CREATE OR REPLACE FUNCTION updateAttendanceTempUsers()
 RETURNS void AS $BODY$
 DECLARE
@@ -841,7 +840,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_badge
+-- Update mdl_badge.
 CREATE OR REPLACE FUNCTION updateBagde()
 RETURNS void AS $BODY$
 DECLARE
@@ -875,7 +874,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_badge_backpack
+-- Update mdl_badge_backpack
 CREATE OR REPLACE FUNCTION updateBagdeBackpack()
 RETURNS void AS $BODY$
 DECLARE
@@ -898,7 +897,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---delete mdl_block_configurable_reports
+-- Delete mdl_block_configurable_reports
 CREATE OR REPLACE FUNCTION deleteConfigurableReports()
 RETURNS void AS $BODY$
 DECLARE
@@ -910,7 +909,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_block_rss_client
+-- Update mdl_block_rss_client
 CREATE OR REPLACE FUNCTION updateRssClient()
 RETURNS void AS $BODY$
 DECLARE
@@ -937,7 +936,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_blog_external
+-- Update mdl_blog_external.
 CREATE OR REPLACE FUNCTION updateBlogExternal()
 RETURNS void AS $BODY$
 DECLARE
@@ -964,7 +963,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_book
+-- Update mdl_book.
 CREATE OR REPLACE FUNCTION updateBook()
 RETURNS void AS $BODY$
 DECLARE
@@ -996,7 +995,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_book_chapters
+-- Update mdl_book_chapters.
 CREATE OR REPLACE FUNCTION updateBookChapters()
 RETURNS void AS $BODY$
 DECLARE
@@ -1021,7 +1020,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_chat
+-- Update mdl_chat.
 CREATE OR REPLACE FUNCTION updateChat()
 RETURNS void AS $BODY$
 DECLARE
@@ -1053,7 +1052,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_checklist
+-- Update mdl_checklist.
 CREATE OR REPLACE FUNCTION updateCheckList()
 RETURNS void AS $BODY$
 DECLARE
@@ -1078,7 +1077,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_checklist_item
+-- Update mdl_checklist_item.
 CREATE OR REPLACE FUNCTION updateCheckListItem()
 RETURNS void AS $BODY$
 DECLARE
@@ -1103,7 +1102,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_choice
+-- Update mdl_choice.
 CREATE OR REPLACE FUNCTION updateChoice()
 RETURNS void AS $BODY$
 DECLARE
@@ -1135,7 +1134,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_choice_options
+-- Update mdl_choice_options.
 CREATE OR REPLACE FUNCTION updateChoiceOption()
 RETURNS void AS $BODY$
 DECLARE
@@ -1159,7 +1158,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_choicegroup
+-- Update mdl_choicegroup.
 CREATE OR REPLACE FUNCTION updateChoiceGroup()
 RETURNS void AS $BODY$
 DECLARE
@@ -1184,7 +1183,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_cohort
+-- Update mdl_cohort.
 CREATE OR REPLACE FUNCTION updateCohort()
 RETURNS void AS $BODY$
 DECLARE
@@ -1193,9 +1192,12 @@ DECLARE
 BEGIN
     counter := 0;
     FOR object IN
+
         SELECT id
         FROM mdl_cohort
+        WHERE contextid <> 934651
         ORDER BY id ASC
+
     LOOP
         UPDATE mdl_cohort
         SET
@@ -1209,7 +1211,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_comments
+-- Update mdl_comments.
 CREATE OR REPLACE FUNCTION updateComments()
 RETURNS void AS $BODY$
 DECLARE
@@ -1233,7 +1235,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_competency_userevidence
+-- Update mdl_competency_userevidence.
 CREATE OR REPLACE FUNCTION updateCompetencyEvidence()
 RETURNS void AS $BODY$
 DECLARE
@@ -1258,7 +1260,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_course
+-- Update mdl_course.
 CREATE OR REPLACE FUNCTION updateCourses()
 RETURNS void AS $BODY$
 DECLARE
@@ -1267,14 +1269,14 @@ DECLARE
 BEGIN
     counter := 0;
     FOR object IN
-        SELECT id
-        FROM mdl_course
-        WHERE id NOT IN (SELECT c.id
-                            FROM mdl_course c
-                                INNER JOIN mdl_course_categories cc ON cc.id = c.category
-                            WHERE
-                                c.category = 30940
-                                OR cc.parent = 30940)
+
+        SELECT c.id
+        FROM mdl_course c
+            INNER JOIN mdl_course_categories cc ON cc.id = c.category
+        WHERE
+            c.category <> 30940
+            OR cc.parent <> 30940
+
         ORDER BY id ASC
     LOOP
         UPDATE mdl_course
@@ -1291,7 +1293,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_course_categories
+-- Update mdl_course_categories.
 CREATE OR REPLACE FUNCTION updateCourseCategories()
 RETURNS void AS $BODY$
 DECLARE
@@ -1300,9 +1302,14 @@ DECLARE
 BEGIN
     counter := 0;
     FOR object IN
+
         SELECT id
         FROM mdl_course_categories
+        WHERE
+            id <> 30940
+            AND parent <> 30940
         ORDER BY id ASC
+
     LOOP
         UPDATE mdl_course_categories
         SET
@@ -1317,7 +1324,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_course_sections
+-- Update mdl_course_sections.
 CREATE OR REPLACE FUNCTION updateCourseSections()
 RETURNS void AS $BODY$
 DECLARE
@@ -1326,6 +1333,7 @@ DECLARE
 BEGIN
     counter := 0;
     FOR object IN
+
         SELECT s.id
         FROM mdl_course_sections s
         JOIN mdl_course c ON s.course = c.id
@@ -1336,6 +1344,7 @@ BEGIN
                                 c.category = 30940
                                 OR cc.parent = 30940)
         ORDER BY s.id ASC
+
     LOOP
         UPDATE mdl_course_sections
         SET
@@ -1349,7 +1358,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_data
+-- Update mdl_data.
 CREATE OR REPLACE FUNCTION updateData()
 RETURNS void AS $BODY$
 DECLARE
@@ -1381,7 +1390,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_data_content
+-- Update mdl_data_content.
 CREATE OR REPLACE FUNCTION updateDataContent()
 RETURNS void AS $BODY$
 DECLARE
@@ -1406,7 +1415,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_data_fields
+-- Update mdl_data_fields.
 CREATE OR REPLACE FUNCTION updateDataFields()
 RETURNS void AS $BODY$
 DECLARE
@@ -1436,7 +1445,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_deleted_users
+-- Update mdl_deleted_users.
 CREATE OR REPLACE FUNCTION updateDeletedUsers()
 RETURNS void AS $BODY$
 DECLARE
@@ -1463,7 +1472,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---delete mdl_deleteoldcourses_deleted
+-- Delete mdl_deleteoldcourses_deleted.
 CREATE OR REPLACE FUNCTION deleteCoursesHasDeleted()
 RETURNS void AS $BODY$
 DECLARE
@@ -1475,7 +1484,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_event
+-- Update mdl_event.
 CREATE OR REPLACE FUNCTION updateEvents()
 RETURNS void AS $BODY$
 DECLARE
@@ -1500,7 +1509,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_event_subscriptions
+-- Update mdl_event_subscriptions.
 CREATE OR REPLACE FUNCTION updateEventsSuscriptions()
 RETURNS void AS $BODY$
 DECLARE
@@ -1525,7 +1534,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---delete mdl_external_tokens
+-- Delete mdl_external_tokens.
 CREATE OR REPLACE FUNCTION deleteExternalTokens()
 RETURNS void AS $BODY$
 DECLARE
@@ -1537,7 +1546,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_feedback
+-- Update mdl_feedback.
 CREATE OR REPLACE FUNCTION updateFeedback()
 RETURNS void AS $BODY$
 DECLARE
@@ -1570,7 +1579,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_feedback_item
+-- Update mdl_feedback_item.
 CREATE OR REPLACE FUNCTION updateFeedbackItem()
 RETURNS void AS $BODY$
 DECLARE
@@ -1596,7 +1605,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_feedback_template
+-- Update mdl_feedback_template.
 CREATE OR REPLACE FUNCTION updateFeedbackTemplate()
 RETURNS void AS $BODY$
 DECLARE
@@ -1620,7 +1629,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_folder
+-- Update mdl_folder.
 CREATE OR REPLACE FUNCTION updateFolder()
 RETURNS void AS $BODY$
 DECLARE
@@ -1645,7 +1654,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_forum
+-- Update mdl_forum.
 CREATE OR REPLACE FUNCTION updateForum()
 RETURNS void AS $BODY$
 DECLARE
@@ -1677,7 +1686,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_forum_discussions
+-- Update mdl_forum_discussions.
 CREATE OR REPLACE FUNCTION updateForumDiscussion()
 RETURNS void AS $BODY$
 DECLARE
@@ -1701,7 +1710,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_forum_posts
+-- Update mdl_forum_posts.
 CREATE OR REPLACE FUNCTION updateForumPost()
 RETURNS void AS $BODY$
 DECLARE
@@ -1726,7 +1735,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_game_queries
+-- Update mdl_game_queries.
 CREATE OR REPLACE FUNCTION updateGameQueries()
 RETURNS void AS $BODY$
 DECLARE
@@ -1752,7 +1761,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_glossary
+-- Update mdl_glossary.
 CREATE OR REPLACE FUNCTION updateGlosary()
 RETURNS void AS $BODY$
 DECLARE
@@ -1777,7 +1786,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_glossary_alias
+-- Update mdl_glossary_alias.
 CREATE OR REPLACE FUNCTION updateGlosaryAlias()
 RETURNS void AS $BODY$
 DECLARE
@@ -1801,7 +1810,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_glossary_categories
+-- Update mdl_glossary_categories.
 CREATE OR REPLACE FUNCTION updateGlosaryCategories()
 RETURNS void AS $BODY$
 DECLARE
@@ -1825,7 +1834,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_glossary_entries
+-- Update mdl_glossary_entries,
 CREATE OR REPLACE FUNCTION updateGlosaryEntries()
 RETURNS void AS $BODY$
 DECLARE
@@ -1850,7 +1859,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_grade_grades_history
+-- Update mdl_grade_grades_history.
 CREATE OR REPLACE FUNCTION updateGradesHistory()
 RETURNS void AS $BODY$
 DECLARE
@@ -1865,7 +1874,7 @@ BEGIN
     LOOP
         UPDATE mdl_grade_grades_history
         SET
-            feedback = 'feedback'||counter
+            feedback = NULL
         WHERE id = object.id;
         counter := counter + 1;
     END LOOP;
@@ -1874,7 +1883,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_grade_import_newitem
+-- Update mdl_grade_import_newitem.
 CREATE OR REPLACE FUNCTION updateGradeImportNewitem()
 RETURNS void AS $BODY$
 DECLARE
@@ -1898,7 +1907,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_grade_items
+-- Update mdl_grade_items.
 CREATE OR REPLACE FUNCTION updateGradeItems()
 RETURNS void AS $BODY$
 DECLARE
@@ -1922,7 +1931,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_grade_items_history
+-- Update mdl_grade_items_history
 CREATE OR REPLACE FUNCTION updateGradeItemsHistory()
 RETURNS void AS $BODY$
 DECLARE
@@ -1946,7 +1955,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_grade_outcomes
+-- Update mdl_grade_outcomes.
 CREATE OR REPLACE FUNCTION updateGradeOutcomes()
 RETURNS void AS $BODY$
 DECLARE
@@ -1972,7 +1981,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_grade_outcomes_history
+-- Update mdl_grade_outcomes_history.
 CREATE OR REPLACE FUNCTION updateGradeOutcomesHistory()
 RETURNS void AS $BODY$
 DECLARE
@@ -1998,7 +2007,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_grading_definitions
+-- Update mdl_grading_definitions.
 CREATE OR REPLACE FUNCTION updateGradingDefinitions()
 RETURNS void AS $BODY$
 DECLARE
@@ -2023,7 +2032,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_gradingform_guide_criteria
+-- Update mdl_gradingform_guide_criteria.
 CREATE OR REPLACE FUNCTION updateGradingFormGuideCriteria()
 RETURNS void AS $BODY$
 DECLARE
@@ -2049,7 +2058,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_gradingform_rubric_criteria
+-- Update mdl_gradingform_rubric_criteria.
 CREATE OR REPLACE FUNCTION updateGradingFormRubricCriteria()
 RETURNS void AS $BODY$
 DECLARE
@@ -2073,7 +2082,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_groupings
+-- Update mdl_groupings.
 CREATE OR REPLACE FUNCTION updateGrouping()
 RETURNS void AS $BODY$
 DECLARE
@@ -2098,7 +2107,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_groups
+-- Update mdl_groups.
 CREATE OR REPLACE FUNCTION updateGroups()
 RETURNS void AS $BODY$
 DECLARE
@@ -2123,7 +2132,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_hotpot
+-- Update mdl_hotpot.
 CREATE OR REPLACE FUNCTION updateHotpot()
 RETURNS void AS $BODY$
 DECLARE
@@ -2155,7 +2164,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_hotpot_cache
+-- Update mdl_hotpot_cache.
 CREATE OR REPLACE FUNCTION updateHotpotCache()
 RETURNS void AS $BODY$
 DECLARE
@@ -2179,7 +2188,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_hotpot_questions
+-- Update mdl_hotpot_questions.
 CREATE OR REPLACE FUNCTION updateHotpotQuestions()
 RETURNS void AS $BODY$
 DECLARE
@@ -2203,7 +2212,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_hotpot_strings
+-- Update mdl_hotpot_strings.
 CREATE OR REPLACE FUNCTION updateHotpotStrings()
 RETURNS void AS $BODY$
 DECLARE
@@ -2227,7 +2236,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_hvp
+-- Update mdl_hvp.
 CREATE OR REPLACE FUNCTION updateHvp()
 RETURNS void AS $BODY$
 DECLARE
@@ -2259,7 +2268,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_hvp_events
+-- Update mdl_hvp_events.
 CREATE OR REPLACE FUNCTION updateHvpEvents()
 RETURNS void AS $BODY$
 DECLARE
@@ -2283,7 +2292,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_journal
+-- Update mdl_journal.
 CREATE OR REPLACE FUNCTION updateJournal()
 RETURNS void AS $BODY$
 DECLARE
@@ -2315,7 +2324,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_journal_entries
+-- Update mdl_journal_entries.
 CREATE OR REPLACE FUNCTION updateJournalEntries()
 RETURNS void AS $BODY$
 DECLARE
@@ -2339,7 +2348,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_label
+-- Update mdl_label.
 CREATE OR REPLACE FUNCTION updateLabel()
 RETURNS void AS $BODY$
 DECLARE
@@ -2371,7 +2380,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_lesson
+-- Update mdl_lesson.
 CREATE OR REPLACE FUNCTION updateLesson()
 RETURNS void AS $BODY$
 DECLARE
@@ -2404,7 +2413,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_lesson_answers
+-- Update mdl_lesson_answers.
 CREATE OR REPLACE FUNCTION updateLessonAnswers()
 RETURNS void AS $BODY$
 DECLARE
@@ -2429,7 +2438,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_lesson_attempts
+-- Update mdl_lesson_attempts.
 CREATE OR REPLACE FUNCTION updateLessonAttemps()
 RETURNS void AS $BODY$
 DECLARE
@@ -2453,7 +2462,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_lesson_pages
+-- Update mdl_lesson_pages.
 CREATE OR REPLACE FUNCTION updateLessonPages()
 RETURNS void AS $BODY$
 DECLARE
@@ -2478,7 +2487,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_lightboxgallery
+-- Update mdl_lightboxgallery.
 CREATE OR REPLACE FUNCTION updateLightBoxGallery()
 RETURNS void AS $BODY$
 DECLARE
@@ -2510,7 +2519,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_lti
+-- Update mdl_lti.
 CREATE OR REPLACE FUNCTION updateLti()
 RETURNS void AS $BODY$
 DECLARE
@@ -2545,7 +2554,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_message
+-- Update mdl_message.
 CREATE OR REPLACE FUNCTION updateMessage()
 RETURNS void AS $BODY$
 DECLARE
@@ -2569,7 +2578,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_message_read
+-- Update mdl_message_read.
 CREATE OR REPLACE FUNCTION updateMessageRead()
 RETURNS void AS $BODY$
 DECLARE
@@ -2596,7 +2605,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_notifications
+-- Update mdl_notifications.
 CREATE OR REPLACE FUNCTION updateNotifications()
 RETURNS void AS $BODY$
 DECLARE
@@ -2624,7 +2633,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---delete mdl_oauth2_issuer
+-- Delete mdl_oauth2_issuer.
 CREATE OR REPLACE FUNCTION deleteOauth2Issue()
 RETURNS void AS $BODY$
 DECLARE
@@ -2636,7 +2645,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_page
+-- Update mdl_page.
 CREATE OR REPLACE FUNCTION updatePage()
 RETURNS void AS $BODY$
 DECLARE
@@ -2669,7 +2678,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_post
+-- Update mdl_post.
 CREATE OR REPLACE FUNCTION updatePost()
 RETURNS void AS $BODY$
 DECLARE
@@ -2694,7 +2703,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_question_attempts
+-- Update mdl_question_attempts.
 CREATE OR REPLACE FUNCTION updateQuestionAttempts()
 RETURNS void AS $BODY$
 DECLARE
@@ -2720,7 +2729,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_question_splitset
+-- Update mdl_question_splitset.
 CREATE OR REPLACE FUNCTION updateQuestionSplitset()
 RETURNS void AS $BODY$
 DECLARE
@@ -2749,7 +2758,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_question_splitset_sub
+-- Update mdl_question_splitset_sub.
 CREATE OR REPLACE FUNCTION updateQuestionSplitsetSub()
 RETURNS void AS $BODY$
 DECLARE
@@ -2773,7 +2782,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_questionnaire_survey
+-- Update mdl_questionnaire_survey.
 CREATE OR REPLACE FUNCTION updateQuestionnaireSurvey()
 RETURNS void AS $BODY$
 DECLARE
@@ -2799,7 +2808,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_quiz_feedback
+-- Update mdl_quiz_feedback.
 CREATE OR REPLACE FUNCTION updateQuizFeedback()
 RETURNS void AS $BODY$
 DECLARE
@@ -2823,7 +2832,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_quiz_slot_tags
+-- Update mdl_quiz_slot_tags.
 CREATE OR REPLACE FUNCTION updateQuizSlotTags()
 RETURNS void AS $BODY$
 DECLARE
@@ -2848,7 +2857,7 @@ $BODY$
 LANGUAGE plpgsql;
 
 
---update mdl_resource
+-- Update mdl_resource.
 CREATE OR REPLACE FUNCTION updateResource()
 RETURNS void AS $BODY$
 DECLARE
@@ -2880,7 +2889,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_resource_old
+-- Update mdl_resource_old.
 CREATE OR REPLACE FUNCTION updateResourceOld()
 RETURNS void AS $BODY$
 DECLARE
@@ -2907,7 +2916,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_role
+-- Update mdl_role.
 CREATE OR REPLACE FUNCTION updateRole()
 RETURNS void AS $BODY$
 DECLARE
@@ -2933,7 +2942,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_scale
+-- Update mdl_scale.
 CREATE OR REPLACE FUNCTION updateScale()
 RETURNS void AS $BODY$
 DECLARE
@@ -2959,7 +2968,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_scale_history
+-- Update mdl_scale_history.
 CREATE OR REPLACE FUNCTION updateScaleHistory()
 RETURNS void AS $BODY$
 DECLARE
@@ -2985,7 +2994,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_scorm
+-- Update mdl_scorm.
 CREATE OR REPLACE FUNCTION updateScorm()
 RETURNS void AS $BODY$
 DECLARE
@@ -3018,7 +3027,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_scorm_scoes
+-- Update mdl_scorm_scoes.
 CREATE OR REPLACE FUNCTION updateScormScoes()
 RETURNS void AS $BODY$
 DECLARE
@@ -3043,7 +3052,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---delete mdl_sessions
+-- Delete mdl_sessions.
 CREATE OR REPLACE FUNCTION deleteSessions()
 RETURNS void AS $BODY$
 DECLARE
@@ -3055,7 +3064,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_survey
+-- Update mdl_survey.
 CREATE OR REPLACE FUNCTION updateSurvey()
 RETURNS void AS $BODY$
 DECLARE
@@ -3087,7 +3096,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_tag
+-- Update mdl_tag.
 CREATE OR REPLACE FUNCTION updateTag()
 RETURNS void AS $BODY$
 DECLARE
@@ -3113,98 +3122,98 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_talentospilos_academics_data
-CREATE OR REPLACE FUNCTION updatePilosAcademicsData()
-RETURNS void AS $BODY$
-DECLARE
-    object mdl_talentospilos_academics_data%rowtype;
-    counter integer;
-BEGIN
-    counter := 0;
-    FOR object IN
-        SELECT id
-        FROM mdl_talentospilos_academics_data
-        ORDER BY id ASC
-    LOOP
-        UPDATE mdl_talentospilos_academics_data
-        SET
-            resolucion_programa = 'Prog'||counter,
-            creditos_totales = 100,
-            otras_instituciones = 'Inst'||counter,
-            dificultades = 'Prob'||counter,
-            observaciones = 'So'||counter,
-            titulo_academico_colegio = 'Prep'
-        WHERE id = object.id;
-        counter := counter + 1;
-    END LOOP;
-    RETURN;
-END;
-$BODY$
-LANGUAGE plpgsql;
+-- Update mdl_talentospilos_academics_data.
+-- CREATE OR REPLACE FUNCTION updatePilosAcademicsData()
+-- RETURNS void AS $BODY$
+-- DECLARE
+--     object mdl_talentospilos_academics_data%rowtype;
+--     counter integer;
+-- BEGIN
+--     counter := 0;
+--     FOR object IN
+--         SELECT id
+--         FROM mdl_talentospilos_academics_data
+--         ORDER BY id ASC
+--     LOOP
+--         UPDATE mdl_talentospilos_academics_data
+--         SET
+--             resolucion_programa = 'Prog'||counter,
+--             creditos_totales = 100,
+--             otras_instituciones = 'Inst'||counter,
+--             dificultades = 'Prob'||counter,
+--             observaciones = 'So'||counter,
+--             titulo_academico_colegio = 'Prep'
+--         WHERE id = object.id;
+--         counter := counter + 1;
+--     END LOOP;
+--     RETURN;
+-- END;
+-- $BODY$
+-- LANGUAGE plpgsql;
 
---update mdl_talentospilos_retiros
-CREATE OR REPLACE FUNCTION updatePilosRetiros()
-RETURNS void AS $BODY$
-DECLARE
-    object mdl_talentospilos_retiros%rowtype;
-    counter integer;
-BEGIN
-    counter := 0;
-    FOR object IN
-        SELECT id
-        FROM mdl_talentospilos_retiros
-        ORDER BY id ASC
-    LOOP
-        UPDATE mdl_talentospilos_retiros
-        SET
-            detalle = 'Det'||counter
-        WHERE id = object.id;
-        counter := counter + 1;
-    END LOOP;
-    RETURN;
-END;
-$BODY$
-LANGUAGE plpgsql;
+-- Update mdl_talentospilos_retiros
+-- CREATE OR REPLACE FUNCTION updatePilosRetiros()
+-- RETURNS void AS $BODY$
+-- DECLARE
+--     object mdl_talentospilos_retiros%rowtype;
+--     counter integer;
+-- BEGIN
+--     counter := 0;
+--     FOR object IN
+--         SELECT id
+--         FROM mdl_talentospilos_retiros
+--         ORDER BY id ASC
+--     LOOP
+--         UPDATE mdl_talentospilos_retiros
+--         SET
+--             detalle = 'Det'||counter
+--         WHERE id = object.id;
+--         counter := counter + 1;
+--     END LOOP;
+--     RETURN;
+-- END;
+-- $BODY$
+-- LANGUAGE plpgsql;
 
---update mdl_talentospilos_seguimiento
-CREATE OR REPLACE FUNCTION updatePilosSeguimiento()
-RETURNS void AS $BODY$
-DECLARE
-    object mdl_talentospilos_seguimiento%rowtype;
-    counter integer;
-BEGIN
-    counter := 0;
-    FOR object IN
-        SELECT id
-        FROM mdl_talentospilos_seguimiento
-        ORDER BY id ASC
-    LOOP
-        UPDATE mdl_talentospilos_seguimiento
-        SET
-            lugar = 'Uv',
-            tema = 'Tpic'||counter,
-            objetivos = 'Obj'||counter,
-            familiar_desc = NULL,
-            academico = NULL,
-            economico = NULL,
-            vida_uni = NULL,
-            observaciones = '',
-            individual = 'Charla'||counter,
-            actividades = 'Activity'||counter,
-            familiar_riesgo = NULL,
-            academico_riesgo = NULL,
-            economico_riesgo = NULL,
-            vida_uni_riesgo = NULL,
-            individual_riesgo = NULL
-        WHERE id = object.id;
-        counter := counter + 1;
-    END LOOP;
-    RETURN;
-END;
-$BODY$
-LANGUAGE plpgsql;
+-- Update mdl_talentospilos_seguimiento.
+-- CREATE OR REPLACE FUNCTION updatePilosSeguimiento()
+-- RETURNS void AS $BODY$
+-- DECLARE
+--     object mdl_talentospilos_seguimiento%rowtype;
+--     counter integer;
+-- BEGIN
+--     counter := 0;
+--     FOR object IN
+--         SELECT id
+--         FROM mdl_talentospilos_seguimiento
+--         ORDER BY id ASC
+--     LOOP
+--         UPDATE mdl_talentospilos_seguimiento
+--         SET
+--             lugar = 'Uv',
+--             tema = 'Tpic'||counter,
+--             objetivos = 'Obj'||counter,
+--             familiar_desc = NULL,
+--             academico = NULL,
+--             economico = NULL,
+--             vida_uni = NULL,
+--             observaciones = '',
+--             individual = 'Charla'||counter,
+--             actividades = 'Activity'||counter,
+--             familiar_riesgo = NULL,
+--             academico_riesgo = NULL,
+--             economico_riesgo = NULL,
+--             vida_uni_riesgo = NULL,
+--             individual_riesgo = NULL
+--         WHERE id = object.id;
+--         counter := counter + 1;
+--     END LOOP;
+--     RETURN;
+-- END;
+-- $BODY$
+-- LANGUAGE plpgsql;
 
---update mdl_tool_recyclebin_category
+-- Update mdl_tool_recyclebin_category.
 CREATE OR REPLACE FUNCTION updateToolRecyclerCategory()
 RETURNS void AS $BODY$
 DECLARE
@@ -3229,7 +3238,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_tool_recyclebin_course
+-- Update mdl_tool_recyclebin_course.
 CREATE OR REPLACE FUNCTION updateToolRecyclerCourse()
 RETURNS void AS $BODY$
 DECLARE
@@ -3253,7 +3262,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_url
+-- Update mdl_url.
 CREATE OR REPLACE FUNCTION updateUrl()
 RETURNS void AS $BODY$
 DECLARE
@@ -3286,7 +3295,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---delete mdl_user_devices
+-- Delete mdl_user_devices.
 CREATE OR REPLACE FUNCTION deleteUserDevices()
 RETURNS void AS $BODY$
 DECLARE
@@ -3298,7 +3307,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_wiki
+-- Update mdl_wiki.
 CREATE OR REPLACE FUNCTION updateWiki()
 RETURNS void AS $BODY$
 DECLARE
@@ -3331,7 +3340,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_wiki_links
+-- Update mdl_wiki_links.
 CREATE OR REPLACE FUNCTION updateWikiLinks()
 RETURNS void AS $BODY$
 DECLARE
@@ -3355,7 +3364,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_wiki_pages
+-- Update mdl_wiki_pages.
 CREATE OR REPLACE FUNCTION updateWikiPages()
 RETURNS void AS $BODY$
 DECLARE
@@ -3380,7 +3389,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_wiki_versions
+-- Update mdl_wiki_versions.
 CREATE OR REPLACE FUNCTION updateWikiVersions()
 RETURNS void AS $BODY$
 DECLARE
@@ -3404,7 +3413,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_workshop
+-- Update mdl_workshop.
 CREATE OR REPLACE FUNCTION updateWorkShop()
 RETURNS void AS $BODY$
 DECLARE
@@ -3439,7 +3448,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_workshop_assessments
+-- Update mdl_workshop_assessments.
 CREATE OR REPLACE FUNCTION updateWorkShopAssesments()
 RETURNS void AS $BODY$
 DECLARE
@@ -3463,7 +3472,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_workshop_grades
+-- Update mdl_workshop_grades.
 CREATE OR REPLACE FUNCTION updateWorkShopGrades()
 RETURNS void AS $BODY$
 DECLARE
@@ -3488,7 +3497,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_workshop_submissions
+-- Update mdl_workshop_submissions.
 CREATE OR REPLACE FUNCTION updateWorkShopSubmissions()
 RETURNS void AS $BODY$
 DECLARE
@@ -3513,7 +3522,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_workshopform_accumulative
+-- Update mdl_workshopform_accumulative.
 CREATE OR REPLACE FUNCTION updateWorkShopFormAcumulative()
 RETURNS void AS $BODY$
 DECLARE
@@ -3537,7 +3546,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_workshopform_numerrors
+-- Update mdl_workshopform_numerrors.
 CREATE OR REPLACE FUNCTION updateWorkShopFormErrors()
 RETURNS void AS $BODY$
 DECLARE
@@ -3561,7 +3570,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_workshopform_comments
+-- Update mdl_workshopform_comments.
 CREATE OR REPLACE FUNCTION updateWorkShopFormComments()
 RETURNS void AS $BODY$
 DECLARE
@@ -3585,7 +3594,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_workshopform_rubric
+-- Update mdl_workshopform_rubric.
 CREATE OR REPLACE FUNCTION updateWorkShopFormRubric()
 RETURNS void AS $BODY$
 DECLARE
@@ -3609,7 +3618,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update mdl_workshopform_rubric_levels
+-- Update mdl_workshopform_rubric_levels.
 CREATE OR REPLACE FUNCTION updateWorkShopFormRubricLevels()
 RETURNS void AS $BODY$
 DECLARE
@@ -3657,9 +3666,8 @@ SELECT updateQuestionsDdimageortext2();
 SELECT updateQuestionsDdmarker();
 SELECT updateQuestionsKprime();
 SELECT updateQuestionsMatch();
-SELECT updatePilosAnswers();
-SELECT updatePilosUsers();
-
+-- SELECT updatePilosAnswers();
+-- SELECT updatePilosUsers();
 SELECT updateAssignFeedBackComments();
 SELECT updateAssignFeedBackPdfs();
 SELECT updateAssignFeedBackPdfQuick();
@@ -3706,7 +3714,7 @@ SELECT updateGlosary();
 SELECT updateGlosaryAlias();
 SELECT updateGlosaryCategories();
 SELECT updateGlosaryEntries();
---SELECT updateGradesHistory();
+SELECT updateGradesHistory();
 SELECT updateGradeImportNewitem();
 SELECT updateGradeItems();
 SELECT updateGradeItemsHistory();
@@ -3754,9 +3762,9 @@ SELECT updateScormScoes();
 SELECT deleteSessions();
 SELECT updateSurvey();
 SELECT updateTag();
-SELECT updatePilosAcademicsData();
-SELECT updatePilosRetiros();
-SELECT updatePilosSeguimiento();
+-- SELECT updatePilosAcademicsData();
+-- SELECT updatePilosRetiros();
+-- SELECT updatePilosSeguimiento();
 SELECT updateToolRecyclerCategory();
 SELECT updateToolRecyclerCourse();
 SELECT updateUrl();
@@ -3797,9 +3805,8 @@ DROP FUNCTION IF EXISTS updateQuestionsDdimageortext2();
 DROP FUNCTION IF EXISTS updateQuestionsDdmarker();
 DROP FUNCTION IF EXISTS updateQuestionsKprime();
 DROP FUNCTION IF EXISTS updateQuestionsMatch();
-DROP FUNCTION IF EXISTS updatePilosAnswers();
-DROP FUNCTION IF EXISTS updatePilosUsers();
-
+-- DROP FUNCTION IF EXISTS updatePilosAnswers();
+-- DROP FUNCTION IF EXISTS updatePilosUsers();
 DROP FUNCTION IF EXISTS updateAssignFeedBackComments();
 DROP FUNCTION IF EXISTS updateAssignFeedBackPdfs();
 DROP FUNCTION IF EXISTS updateAssignFeedBackPdfQuick();
@@ -3894,9 +3901,9 @@ DROP FUNCTION IF EXISTS updateScormScoes();
 DROP FUNCTION IF EXISTS deleteSessions();
 DROP FUNCTION IF EXISTS updateSurvey();
 DROP FUNCTION IF EXISTS updateTag();
-DROP FUNCTION IF EXISTS updatePilosAcademicsData();
-DROP FUNCTION IF EXISTS updatePilosRetiros();
-DROP FUNCTION IF EXISTS updatePilosSeguimiento();
+-- DROP FUNCTION IF EXISTS updatePilosAcademicsData();
+-- DROP FUNCTION IF EXISTS updatePilosRetiros();
+-- DROP FUNCTION IF EXISTS updatePilosSeguimiento();
 DROP FUNCTION IF EXISTS updateToolRecyclerCategory();
 DROP FUNCTION IF EXISTS updateToolRecyclerCourse();
 DROP FUNCTION IF EXISTS updateUrl();
