@@ -18,10 +18,9 @@ BEGIN
             FROM mdl_user
             WHERE
             username NOT IN (SELECT DISTINCT u.username
-                                    FROM mdl_talentospilos_user_rol tpur
-                                        INNER JOIN  mdl_user u ON u.id = tpur.id_usuario
-                                    WHERE u.id <> 2
-                                        OR u.id <> 128)
+                            FROM mdl_talentospilos_user_rol tpur
+                                INNER JOIN  mdl_user u ON u.id = tpur.id_usuario
+                            WHERE u.id NOT IN (2, 128))
             UNION
 
             SELECT *
@@ -82,7 +81,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---delete messages table
+-- Delete messages table
 CREATE OR REPLACE FUNCTION deleteMessages()
 RETURNS void AS $BODY$
 DECLARE
@@ -94,10 +93,8 @@ BEGIN
         ORDER BY id ASC
         --LIMIT 10
     LOOP
-
         DELETE FROM mdl_message_user_actions WHERE messageid = message.id;
         DELETE FROM mdl_messages WHERE id = message.id;
-
     END LOOP;
     RETURN;
 END;
@@ -176,8 +173,6 @@ BEGIN
     LOOP
         new_grade := floor(random() * ( 100 - 0 + 1) + 0);
 
-        --RAISE NOTICE 'assignment id (%)', new_grade;
-
         UPDATE mdl_assign_grades
         SET grade = new_grade
         WHERE id = assign_grade.id;
@@ -190,7 +185,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update quices table
+-- Update quices table
 CREATE OR REPLACE FUNCTION updateQuices()
 RETURNS void AS $BODY$
 DECLARE
@@ -224,7 +219,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
---update quices attempts steps SYSTEM
+-- Update quices attempts steps SYSTEM
 CREATE OR REPLACE FUNCTION updateQuicesAttemptsSteps()
 RETURNS void AS $BODY$
 DECLARE
@@ -321,8 +316,7 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
-
---update questionnaires table
+-- Update questionnaires table
 CREATE OR REPLACE FUNCTION updateQuestionnaires()
 RETURNS void AS $BODY$
 DECLARE
@@ -632,69 +626,6 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
--- update answers pilos table
--- CREATE OR REPLACE FUNCTION updatePilosAnswers()
--- RETURNS void AS $BODY$
--- DECLARE
---     answer mdl_talentospilos_df_respuestas%rowtype;
---     counter integer;
--- BEGIN
---     counter := 0;
---     FOR answer IN
---         SELECT id
---         FROM mdl_talentospilos_df_respuestas
---         WHERE id_pregunta IN (5,6,7,8,16,17,20,26,28,29,30,31,32,33,34,37,48,49,50,51,57)
---         ORDER BY id ASC
---     LOOP
---         UPDATE mdl_talentospilos_df_respuestas
---         SET respuesta = 'Información sensible '||counter
---         WHERE id = answer.id;
---         counter := counter + 1;
---     END LOOP;
---     RETURN;
--- END;
--- $BODY$
--- LANGUAGE plpgsql;
-
--- Update users pilos table
--- CREATE OR REPLACE FUNCTION updatePilosUsers()
--- RETURNS void AS $BODY$
--- DECLARE
---     usuario mdl_talentospilos_usuario%rowtype;
---     counter integer;
--- BEGIN
---     counter := 0;
---     FOR usuario IN
---         SELECT *
---         FROM mdl_talentospilos_usuario
---         ORDER BY id ASC
---         --LIMIT 10
---     LOOP
---         UPDATE mdl_talentospilos_usuario
---         SET
---             num_doc = 'Document '||counter,
---             num_doc_ini = 'Document '||counter,
---             dir_ini='999',
---             barrio_ini = 'Meléndez',
---             tel_ini='888',
---             direccion_res= '777',
---             barrio_res='Meléndez',
---             tel_res='666',
---             celular='555',
---             emailpilos ='pruebaPilos@correo.com',
---             tel_acudiente='444',
---             acudiente = 'Miss Rose',
---             colegio = 'Liceo Mixto '||counter,
---             puntaje_icfes = floor(random() * ( 450 - 1 + 1) + 1),
---             estrato = floor(random() * ( 5 - 1 + 1) + 1),
---             vive_con = 'Familia'
---         WHERE id = usuario.id;
---         counter := counter + 1;
---     END LOOP;
---     RETURN;
--- END;
--- $BODY$
--- LANGUAGE plpgsql;
 
 -- UUpdate mdl_assignfeedback_comments
 CREATE OR REPLACE FUNCTION updateAssignFeedBackComments()
@@ -1275,7 +1206,7 @@ BEGIN
             INNER JOIN mdl_course_categories cc ON cc.id = c.category
         WHERE
             c.category <> 30940
-            OR cc.parent <> 30940
+            AND cc.parent <> 30940
 
         ORDER BY id ASC
     LOOP
@@ -3122,97 +3053,6 @@ END;
 $BODY$
 LANGUAGE plpgsql;
 
--- Update mdl_talentospilos_academics_data.
--- CREATE OR REPLACE FUNCTION updatePilosAcademicsData()
--- RETURNS void AS $BODY$
--- DECLARE
---     object mdl_talentospilos_academics_data%rowtype;
---     counter integer;
--- BEGIN
---     counter := 0;
---     FOR object IN
---         SELECT id
---         FROM mdl_talentospilos_academics_data
---         ORDER BY id ASC
---     LOOP
---         UPDATE mdl_talentospilos_academics_data
---         SET
---             resolucion_programa = 'Prog'||counter,
---             creditos_totales = 100,
---             otras_instituciones = 'Inst'||counter,
---             dificultades = 'Prob'||counter,
---             observaciones = 'So'||counter,
---             titulo_academico_colegio = 'Prep'
---         WHERE id = object.id;
---         counter := counter + 1;
---     END LOOP;
---     RETURN;
--- END;
--- $BODY$
--- LANGUAGE plpgsql;
-
--- Update mdl_talentospilos_retiros
--- CREATE OR REPLACE FUNCTION updatePilosRetiros()
--- RETURNS void AS $BODY$
--- DECLARE
---     object mdl_talentospilos_retiros%rowtype;
---     counter integer;
--- BEGIN
---     counter := 0;
---     FOR object IN
---         SELECT id
---         FROM mdl_talentospilos_retiros
---         ORDER BY id ASC
---     LOOP
---         UPDATE mdl_talentospilos_retiros
---         SET
---             detalle = 'Det'||counter
---         WHERE id = object.id;
---         counter := counter + 1;
---     END LOOP;
---     RETURN;
--- END;
--- $BODY$
--- LANGUAGE plpgsql;
-
--- Update mdl_talentospilos_seguimiento.
--- CREATE OR REPLACE FUNCTION updatePilosSeguimiento()
--- RETURNS void AS $BODY$
--- DECLARE
---     object mdl_talentospilos_seguimiento%rowtype;
---     counter integer;
--- BEGIN
---     counter := 0;
---     FOR object IN
---         SELECT id
---         FROM mdl_talentospilos_seguimiento
---         ORDER BY id ASC
---     LOOP
---         UPDATE mdl_talentospilos_seguimiento
---         SET
---             lugar = 'Uv',
---             tema = 'Tpic'||counter,
---             objetivos = 'Obj'||counter,
---             familiar_desc = NULL,
---             academico = NULL,
---             economico = NULL,
---             vida_uni = NULL,
---             observaciones = '',
---             individual = 'Charla'||counter,
---             actividades = 'Activity'||counter,
---             familiar_riesgo = NULL,
---             academico_riesgo = NULL,
---             economico_riesgo = NULL,
---             vida_uni_riesgo = NULL,
---             individual_riesgo = NULL
---         WHERE id = object.id;
---         counter := counter + 1;
---     END LOOP;
---     RETURN;
--- END;
--- $BODY$
--- LANGUAGE plpgsql;
-
 -- Update mdl_tool_recyclebin_category.
 CREATE OR REPLACE FUNCTION updateToolRecyclerCategory()
 RETURNS void AS $BODY$
@@ -3666,8 +3506,6 @@ SELECT updateQuestionsDdimageortext2();
 SELECT updateQuestionsDdmarker();
 SELECT updateQuestionsKprime();
 SELECT updateQuestionsMatch();
--- SELECT updatePilosAnswers();
--- SELECT updatePilosUsers();
 SELECT updateAssignFeedBackComments();
 SELECT updateAssignFeedBackPdfs();
 SELECT updateAssignFeedBackPdfQuick();
@@ -3762,9 +3600,6 @@ SELECT updateScormScoes();
 SELECT deleteSessions();
 SELECT updateSurvey();
 SELECT updateTag();
--- SELECT updatePilosAcademicsData();
--- SELECT updatePilosRetiros();
--- SELECT updatePilosSeguimiento();
 SELECT updateToolRecyclerCategory();
 SELECT updateToolRecyclerCourse();
 SELECT updateUrl();
@@ -3805,8 +3640,6 @@ DROP FUNCTION IF EXISTS updateQuestionsDdimageortext2();
 DROP FUNCTION IF EXISTS updateQuestionsDdmarker();
 DROP FUNCTION IF EXISTS updateQuestionsKprime();
 DROP FUNCTION IF EXISTS updateQuestionsMatch();
--- DROP FUNCTION IF EXISTS updatePilosAnswers();
--- DROP FUNCTION IF EXISTS updatePilosUsers();
 DROP FUNCTION IF EXISTS updateAssignFeedBackComments();
 DROP FUNCTION IF EXISTS updateAssignFeedBackPdfs();
 DROP FUNCTION IF EXISTS updateAssignFeedBackPdfQuick();
@@ -3901,9 +3734,6 @@ DROP FUNCTION IF EXISTS updateScormScoes();
 DROP FUNCTION IF EXISTS deleteSessions();
 DROP FUNCTION IF EXISTS updateSurvey();
 DROP FUNCTION IF EXISTS updateTag();
--- DROP FUNCTION IF EXISTS updatePilosAcademicsData();
--- DROP FUNCTION IF EXISTS updatePilosRetiros();
--- DROP FUNCTION IF EXISTS updatePilosSeguimiento();
 DROP FUNCTION IF EXISTS updateToolRecyclerCategory();
 DROP FUNCTION IF EXISTS updateToolRecyclerCourse();
 DROP FUNCTION IF EXISTS updateUrl();
